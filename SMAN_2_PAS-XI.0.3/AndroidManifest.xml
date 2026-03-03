@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    android:compileSdkVersion="33"
+    android:compileSdkVersionCodename="13"
+    package="com.example.SMAN_2_PASURUAN"
+    platformBuildVersionCode="33"
+    platformBuildVersionName="13">
+
+    <!-- ============================================================
+         NETWORK
+         ============================================================ -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- ============================================================
+         SECURITY & KIOSK
+         ============================================================ -->
+    <!-- Untuk UsageStatsManager: deteksi foreground app lain -->
+    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" />
+    <!-- Untuk deteksi overlay aktif di atas app -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <!-- Untuk Device Admin: force lock, clear password -->
+    <uses-permission android:name="android.permission.BIND_DEVICE_ADMIN" />
+    <!-- Agar app bisa query daftar package yang terinstall (root / cheat detection) -->
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
+    <!-- Agar ForegroundService monitor tidak mati di background -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <!-- Mencegah processor sleep saat ujian berjalan -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <!-- Untuk ContentObserver screenshot detection -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+
+    <!-- ============================================================
+         INTERNAL DYNAMIC RECEIVER PERMISSION
+         ============================================================ -->
+    <permission
+        android:name="com.example.SMAN_2_PASURUAN.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+        android:protectionLevel="signature" />
+    <uses-permission android:name="com.example.SMAN_2_PASURUAN.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+
+    <!-- ============================================================
+         APPLICATION
+         CATATAN: android:debuggable="true" HARUS di-set false sebelum
+         release ke siswa, agar tidak bisa di-attach debugger / ADB
+         ============================================================ -->
+    <application
+        android:allowBackup="false"
+        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:debuggable="false"
+        android:extractNativeLibs="false"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:keepScreenOn="true"
+        android:label="SMAN2-XI-0.3"
+        android:lockTaskMode="always"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.SMAN_2_PASURUAN">
+
+        <!-- =========================================================
+             MAIN ACTIVITY — SEMI-KIOSK MODE
+             android:excludeFromRecents   → tidak muncul di recent apps
+             android:noHistory            → tidak ada back-stack history
+             android:finishOnTaskLaunch   → mati jika task berpindah
+             android:resizeableActivity   → tolak multi-window / split
+             android:lockTaskMode="always"→ screen pinning paksa
+             android:configChanges        → handle rotasi sendiri tanpa
+                                            recreate (hindari onStop)
+             ========================================================= -->
+        <activity
+            android:name="com.example.SMAN_2_PASURUAN.MainActivity"
+            android:exported="true"
+            android:lockTaskMode="always"
+            android:resizeableActivity="false"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:finishOnTaskLaunch="true"
+            android:showOnLockScreen="false"
+            android:turnScreenOn="false"
+            android:configChanges="orientation|screenSize|keyboard|keyboardHidden|screenLayout|smallestScreenSize|navigation"
+            android:windowSoftInputMode="adjustResize">
+
+            <!-- HOME category: app tampil sebagai opsi launcher fallback
+                 (berguna tapi tidak wajib untuk non-device-owner) -->
+            <intent-filter android:priority="1000">
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.HOME" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.app.action.PROFILE_PROVISIONING_COMPLETE" />
+                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
+            </intent-filter>
+        </activity>
+
+        <!-- =========================================================
+             EXAM GUARD FOREGROUND SERVICE
+             Service ini berjalan sepanjang sesi ujian, terus memantau
+             foreground app via UsageStats & ActivityManager.
+             Jika mendeteksi app lain di depan, langsung kirim broadcast
+             ke MainActivity untuk TERMINATE.
+             ========================================================= -->
+        <service
+            android:name="com.example.SMAN_2_PASURUAN.ExamGuardService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="exam_security_monitor" />
+        </service>
+
+        <!-- =========================================================
+             DEVICE ADMIN RECEIVER
+             Diperlukan untuk lockScreen, clearPasscode (jika user
+             mencoba bypass dengan lock screen), dan wipeData pada
+             pelanggaran berat.
+             ========================================================= -->
+        <receiver
+            android:name="com.example.SMAN_2_PASURUAN.MyDeviceAdminReceiver"
+            android:exported="true"
+            android:permission="android.permission.BIND_DEVICE_ADMIN">
+            <meta-data
+                android:name="android.app.device_admin"
+                android:resource="@xml/device_admin_policies" />
+            <intent-filter>
+                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- =========================================================
+             ANDROIDX STARTUP PROVIDER
+             ========================================================= -->
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="com.example.SMAN_2_PASURUAN.androidx-startup"
+            android:exported="false">
+            <meta-data
+                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+                android:value="androidx.startup" />
+            <meta-data
+                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+                android:value="androidx.startup" />
+        </provider>
+
+    </application>
+</manifest>

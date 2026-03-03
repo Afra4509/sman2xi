@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Device Admin Policies untuk SMADA Exam App
+    Policies ini aktif hanya jika siswa secara manual mengaktifkan
+    Device Admin (diminta saat pertama kali buka app ujian).
+
+    Tanpa Device Owner:
+    - TIDAK bisa enforce kebijakan system-wide
+    - BISA: lock screen, hapus password, disable kamera (terbatas)
+-->
+<device-admin>
+    <uses-policies>
+        <!-- Paksa lock screen device jika app ditutup paksa -->
+        <force-lock />
+        <!-- Bisa clear/reset password siswa jika melanggar -->
+        <reset-password />
+        <!-- Wipe data sebagai deterrent maksimum (gunakan dengan bijak) -->
+        <!-- <wipe-data /> -->
+        <!-- Disable kamera selama ujian -->
+        <disable-camera />
+        <!-- Disable keyguard features (lock screen notifications, fingerprint) -->
+        <disable-keyguard-features />
+    </uses-policies>
+</device-admin>

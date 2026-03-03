@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical" android:id="@id/bottom_sheet_exit_linear" android:background="@drawable/card_round" android:layout_width="fill_parent" android:layout_height="wrap_content"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout android:orientation="vertical" android:layout_width="fill_parent" android:layout_height="wrap_content">
+        <TextView android:textSize="20.0dip" android:textStyle="bold" android:gravity="center" android:layout_gravity="center" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="0.0dip" android:text="Yakin Ingin Keluar ?" android:fontFamily="sans-serif-medium" />
+        <ImageView android:layout_width="fill_parent" android:layout_height="80.0dip" android:layout_marginTop="16.0dip" android:src="@android:drawable/ic_delete" />
+        <LinearLayout android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginTop="0.0dip" android:weightSum="2.0">
+            <TextView android:textColor="@color/white" android:gravity="center" android:layout_gravity="center" android:id="@id/textViewNo" android:background="@drawable/card_round" android:layout_width="fill_parent" android:layout_height="48.0dip" android:layout_margin="8.0dip" android:text="Tidak" android:layout_weight="1.0" android:elevation="8.0dip" android:backgroundTint="#ff2196f3" />
+            <TextView android:textColor="@color/white" android:gravity="center" android:layout_gravity="center" android:id="@id/textViewYes" android:background="@drawable/card_round" android:layout_width="fill_parent" android:layout_height="48.0dip" android:layout_margin="8.0dip" android:text="Ya" android:layout_weight="1.0" android:elevation="8.0dip" android:backgroundTint="#fffd0001" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>
